@@ -29,8 +29,8 @@ public class JsonParser {
     private static final String RELEASE_DATE = "release_date";
 
 
-    public static List<Movie> convertDataFromJsonString(String json) {
-        List<Movie> list = null;
+    public static ArrayList<Movie> convertDataFromJsonString(String json) {
+        ArrayList<Movie> list = null;
 
         if(json != null) {
             list = new ArrayList<>();
