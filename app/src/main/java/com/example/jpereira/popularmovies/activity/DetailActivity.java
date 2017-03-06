@@ -48,7 +48,7 @@ public class DetailActivity extends AppCompatActivity {
                 mTextViewUserRating.setText("(" + rating + "/10)");
                 mSynopsis.setText(mMovie.getmSynopsis());
 
-                Log.d(TAG, mMovie.toString());
+                Log.i(TAG, mMovie.toString());
 
             }
         }

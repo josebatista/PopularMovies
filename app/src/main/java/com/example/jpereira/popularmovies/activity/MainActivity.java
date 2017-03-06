@@ -21,14 +21,16 @@ import com.example.jpereira.popularmovies.utilities.JsonParser;
 import com.example.jpereira.popularmovies.utilities.NetworkUtil;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String LIST_MOVIES = "list_of_movies";
+    private static final String TYPE_OF_SORT = "type_of_sort";
+
     private static final String GET_POPULAR_MOVIES = "popular";
     private static final String GET_TOP_RATED_MOVIES = "top_rated";
 
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             getMoviesData();
         } else {
             Log.i(TAG, "Loading saved instance");
+            SORT = savedInstanceState.getString(TYPE_OF_SORT);
             mListMovies = savedInstanceState.getParcelableArrayList(LIST_MOVIES);
             fetchData(mListMovies);
         }
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         Log.i(TAG, "Saving instance state");
+        outState.putString(TYPE_OF_SORT, SORT);
         outState.putParcelableArrayList(LIST_MOVIES, mListMovies);
 
     }
@@ -87,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
 
         switch (itemClickedId) {
             case R.id.menu_popular:
-                SORT = "popular";
+                SORT = GET_POPULAR_MOVIES;
                 break;
             case R.id.menu_top_rated:
-                SORT = "top_rated";
+                SORT = GET_TOP_RATED_MOVIES;
                 break;
         }
 
@@ -134,11 +138,14 @@ public class MainActivity extends AppCompatActivity {
             String sort = params[0];
             String response = null;
 
-            URL url = NetworkUtil.buildUrl(sort);
+            URL url;
             try {
+                url = NetworkUtil.buildUrl(sort);
                 response = NetworkUtil.getResponseFromHttpUrl(url);
+            } catch (MalformedURLException e) {
+                Log.e(TAG, e.getMessage());
             } catch (IOException e) {
-                Log.e(TAG, "Error: " + e.getMessage());
+                Log.e(TAG, e.getMessage());
             }
 
             return response;
@@ -155,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 mGridView.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(MainActivity.this,"Error to fetch data, verify your internet connection", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,"Error to fetch data", Toast.LENGTH_LONG).show();
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 mButtonRetry.setVisibility(View.VISIBLE);
             }
