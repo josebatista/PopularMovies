@@ -1,6 +1,7 @@
 package com.example.jpereira.popularmovies.activity;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,14 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
 import com.example.jpereira.popularmovies.adapter.MovieAdapter;
 import com.example.jpereira.popularmovies.classes.Movie;
+import com.example.jpereira.popularmovies.databinding.ActivityMainBinding;
 import com.example.jpereira.popularmovies.utilities.JsonParser;
 import com.example.jpereira.popularmovies.utilities.NetworkUtil;
 
@@ -37,21 +36,23 @@ public class MainActivity extends AppCompatActivity {
     private static String SORT = GET_POPULAR_MOVIES;
 
     private MovieAdapter mAdapter;
-    private GridView mGridView;
-    private ProgressBar mLoadingIndicator;
-    private Button mButtonRetry;
     private ArrayList<Movie> mListMovies;
+    private ActivityMainBinding mainBinding;
+
+//    private SQLiteDatabase mDb;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGridView = (GridView) findViewById(R.id.gv_movies_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading);
-        mButtonRetry = (Button) findViewById(R.id.bt_retry);
+        mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(this);
+//        mDb = dbHelper.getReadableDatabase();
+
+        mainBinding.gvMoviesDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie mMovie = (Movie) parent.getItemAtPosition(position);
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             getMoviesData();
         } else {
             Log.i(TAG, "Loading saved instance");
@@ -108,13 +109,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onGetData(View view) {
-        mButtonRetry.setVisibility(View.INVISIBLE);
+        mainBinding.btRetry.setVisibility(View.INVISIBLE);
         getMoviesData();
     }
 
     private void fetchData(ArrayList<Movie> mListMovies) {
         mAdapter = new MovieAdapter(MainActivity.this, mListMovies);
-        mGridView.setAdapter(mAdapter);
+        mainBinding.gvMoviesDisplay.setAdapter(mAdapter);
     }
 
     private void openDetail(Movie m) {
@@ -129,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mGridView.setVisibility(View.INVISIBLE);
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
+            mainBinding.pbLoading.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -157,14 +158,14 @@ public class MainActivity extends AppCompatActivity {
 
             mListMovies = JsonParser.convertDataFromJsonString(s);
 
-            if(mListMovies != null) {
+            if (mListMovies != null) {
                 fetchData(mListMovies);
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
-                mGridView.setVisibility(View.VISIBLE);
+                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+                mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
             } else {
-                Toast.makeText(MainActivity.this,"Error to fetch data", Toast.LENGTH_LONG).show();
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
-                mButtonRetry.setVisibility(View.VISIBLE);
+                Toast.makeText(MainActivity.this, "Error to fetch data", Toast.LENGTH_LONG).show();
+                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+                mainBinding.btRetry.setVisibility(View.VISIBLE);
             }
         }
     }

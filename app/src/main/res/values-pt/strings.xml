@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Filmes Populares</string>
+    <string name="content_description">Imagem do Filme</string>
+    <string name="detail_title">Detalhe do Filme</string>
+    <string name="overview_movie">Resumo</string>
+    <string name="popular">Popular</string>
+    <string name="release_date_movie">Data de Lançamento</string>
+    <string name="retry">Repetir</string>
+    <string name="synopsis">Resumo</string>
+    <string name="top_rated">Mais Votado</string>
+</resources>

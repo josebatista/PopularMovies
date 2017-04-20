@@ -22,6 +22,7 @@ public class JsonParser {
 
     private static final String RESULTS = "results";
 
+    private static final String MOVIE_ID = "id";
     private static final String ORIGINAL_TITLE = "original_title";
     private static final String MOVIE_POSTER_IMAGE = "poster_path";
     private static final String SYNOPSIS = "overview";
@@ -41,13 +42,14 @@ public class JsonParser {
                 for(int i = 0; i < mArrayMovies.length(); i++) {
                     JSONObject mMovie = mArrayMovies.getJSONObject(i);
 
+                    String mMovieId = String.valueOf(mMovie.getInt(MOVIE_ID));
                     String mOriginalTitle = mMovie.getString(ORIGINAL_TITLE);
                     String mPoster = BASE_URL_POSTER + mMovie.getString(MOVIE_POSTER_IMAGE);
                     String mSynopsis = mMovie.getString(SYNOPSIS);
                     double mUserRating = mMovie.getDouble(USER_RATING);
                     String mReleaseDate = mMovie.getString(RELEASE_DATE);
 
-                    list.add(new Movie(mOriginalTitle, mPoster, mSynopsis, mUserRating, mReleaseDate));
+                    list.add(new Movie(mMovieId, mOriginalTitle, mPoster, mSynopsis, mUserRating, mReleaseDate));
                 }
 
 

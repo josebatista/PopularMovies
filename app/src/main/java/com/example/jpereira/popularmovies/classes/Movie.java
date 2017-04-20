@@ -11,13 +11,15 @@ public class Movie implements Parcelable {
 
     public static final String EXTRA_NAME = "MOVIE";
 
+    private String mIdMovie;
     private String mOriginalTitle;
     private String mImageUrl;
     private String mSynopsis;
     private double mRating;
     private String mReleaseDate;
 
-    public Movie(String mOriginalTitle, String mImageUrl, String mSynopsis, double mRating, String mReleaseDate) {
+    public Movie(String mIdMovie, String mOriginalTitle, String mImageUrl, String mSynopsis, double mRating, String mReleaseDate) {
+        this.mIdMovie = mIdMovie;
         this.mOriginalTitle = mOriginalTitle;
         this.mImageUrl = mImageUrl;
         this.mSynopsis = mSynopsis;
@@ -26,11 +28,20 @@ public class Movie implements Parcelable {
     }
 
     public Movie(Parcel in) {
+        mIdMovie = in.readString();
         mOriginalTitle = in.readString();
         mImageUrl = in.readString();
         mSynopsis = in.readString();
         mRating = in.readDouble();
         mReleaseDate = in.readString();
+    }
+
+    public String getmIdMovie() {
+        return mIdMovie;
+    }
+
+    public void setmIdMovie(String mIdMovie) {
+        this.mIdMovie = mIdMovie;
     }
 
     public String getmOriginalTitle() {
@@ -92,6 +103,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mIdMovie);
         dest.writeString(mOriginalTitle);
         dest.writeString(mImageUrl);
         dest.writeString(mSynopsis);
@@ -102,7 +114,8 @@ public class Movie implements Parcelable {
     @Override
     public String toString() {
         return "Movie{" +
-                "mOriginalTitle='" + mOriginalTitle + '\'' +
+                "mIdMovie='" + mIdMovie + '\'' +
+                ", mOriginalTitle='" + mOriginalTitle + '\'' +
                 ", mImageUrl='" + mImageUrl + '\'' +
                 ", mSynopsis='" + mSynopsis + '\'' +
                 ", mRating=" + mRating +
