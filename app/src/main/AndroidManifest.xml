@@ -20,6 +20,11 @@
         </activity>
         <activity android:name=".activity.DetailActivity" android:parentActivityName=".activity.MainActivity">
         </activity>
-    </application>
 
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.PopularMovieProvider"
+            android:exported="false" />
+
+    </application>
 </manifest>

@@ -1,4 +1,8 @@
 <resources>
+
+    <string name="content_authority">com.example.jpereira.popularmovies</string>
+
+
     <string name="app_name">Popular Movies</string>
     <string name="content_description">Image Of Movie</string>
     <string name="synopsis">Overview</string>
