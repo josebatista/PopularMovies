@@ -2,9 +2,12 @@ package com.example.jpereira.popularmovies.activity;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String LIST_MOVIES = "list_of_movies";
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String GET_POPULAR_MOVIES = "popular";
     private static final String GET_TOP_RATED_MOVIES = "top_rated";
+
+    private static final int POPULAR_MOVIE_LOADER = 42;
 
     private static String SORT = GET_POPULAR_MOVIES;
 
@@ -60,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (savedInstanceState == null) {
-            getMoviesData();
-        } else {
-            Log.i(TAG, "Loading saved instance");
-            SORT = savedInstanceState.getString(TYPE_OF_SORT);
-            mListMovies = savedInstanceState.getParcelableArrayList(LIST_MOVIES);
-            fetchData(mListMovies);
-        }
+//        if (savedInstanceState == null) {
+        getMoviesData();
+//        } else {
+//            Log.i(TAG, "Loading saved instance");
+//            SORT = savedInstanceState.getString(TYPE_OF_SORT);
+//            mListMovies = savedInstanceState.getParcelableArrayList(LIST_MOVIES);
+//            fetchData(mListMovies);
+//        }
     }
 
     @Override
@@ -75,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         Log.i(TAG, "Saving instance state");
-        outState.putString(TYPE_OF_SORT, SORT);
-        outState.putParcelableArrayList(LIST_MOVIES, mListMovies);
+//        outState.putString(TYPE_OF_SORT, SORT);
+//        outState.putParcelableArrayList(LIST_MOVIES, mListMovies);
 
     }
 
@@ -105,7 +110,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMoviesData() {
-        new MovieTask().execute(SORT);
+        try {
+            URL url = NetworkUtil.buildUrl(SORT);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(GET_POPULAR_MOVIES, url.toString());
+
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<String> popularMoviesLoader = loaderManager.getLoader(POPULAR_MOVIE_LOADER);
+
+            if (popularMoviesLoader == null) {
+                loaderManager.initLoader(POPULAR_MOVIE_LOADER, bundle, this);
+            } else {
+                loaderManager.restartLoader(POPULAR_MOVIE_LOADER, bundle, this);
+            }
+
+        } catch (MalformedURLException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void onGetData(View view) {
@@ -125,48 +147,81 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public class MovieTask extends AsyncTask<String, Void, String> {
+    @Override
+    public Loader<String> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<String>(this) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
-            mainBinding.pbLoading.setVisibility(View.VISIBLE);
-        }
+            String jsonMovies;
 
-        @Override
-        protected String doInBackground(String... params) {
-            String sort = params[0];
-            String response = null;
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
 
-            URL url;
-            try {
-                url = NetworkUtil.buildUrl(sort);
-                response = NetworkUtil.getResponseFromHttpUrl(url);
-            } catch (MalformedURLException e) {
-                Log.e(TAG, e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
+                if (args == null) {
+                    return;
+                }
+
+                mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
+                mainBinding.pbLoading.setVisibility(View.VISIBLE);
+
+                if (jsonMovies != null) {
+                    deliverResult(jsonMovies);
+                } else {
+                    forceLoad();
+                }
             }
 
-            return response;
-        }
+            @Override
+            public String loadInBackground() {
+                String sort = args.getString(GET_POPULAR_MOVIES);
+                String response = null;
 
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
 
-            mListMovies = JsonParser.convertDataFromJsonString(s);
+                if (NetworkUtil.isOnline(getContext())) {
+                    if (sort == null || TextUtils.isEmpty(sort)) {
+                        return null;
+                    }
 
-            if (mListMovies != null) {
-                fetchData(mListMovies);
-                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-                mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(MainActivity.this, "Error to fetch data", Toast.LENGTH_LONG).show();
-                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-                mainBinding.btRetry.setVisibility(View.VISIBLE);
+                    try {
+                        URL url = new URL(sort);
+                        response = NetworkUtil.getResponseFromHttpUrl(url);
+                    } catch (IOException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+                return response;
             }
+
+            @Override
+            public void deliverResult(String data) {
+                jsonMovies = data;
+                convertStringToArrayMovie(jsonMovies);
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        convertStringToArrayMovie(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+    }
+
+    private void convertStringToArrayMovie(String data) {
+        mListMovies = JsonParser.convertDataFromJsonString(data);
+
+        if (mListMovies != null) {
+            fetchData(mListMovies);
+            mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+            mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
+        } else {
+            Toast.makeText(MainActivity.this, "Error to fetch data", Toast.LENGTH_LONG).show();
+            mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+            mainBinding.btRetry.setVisibility(View.VISIBLE);
         }
     }
+
 }

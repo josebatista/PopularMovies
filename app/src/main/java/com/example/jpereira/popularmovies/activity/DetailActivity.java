@@ -55,48 +55,48 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    public class MovieTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
-            mainBinding.pbLoading.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String param = params[0];
-            String response = null;
-
-            URL url;
-            try {
-                url = NetworkUtil.buildUrl(param);
-                response = NetworkUtil.getResponseFromHttpUrl(url);
-            } catch (MalformedURLException e) {
-                Log.e(TAG, e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
-            }
-
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            mListMovies = JsonParser.convertDataFromJsonString(s);
-
-            if(mListMovies != null) {
-                fetchData(mListMovies);
-                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-                mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(MainActivity.this,"Error to fetch data", Toast.LENGTH_LONG).show();
-                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-                mainBinding.btRetry.setVisibility(View.VISIBLE);
-            }
-        }
-    }
+//    public class MovieTask extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
+//            mainBinding.pbLoading.setVisibility(View.VISIBLE);
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            String param = params[0];
+//            String response = null;
+//
+//            URL url;
+//            try {
+//                url = NetworkUtil.buildUrl(param);
+//                response = NetworkUtil.getResponseFromHttpUrl(url);
+//            } catch (MalformedURLException e) {
+//                Log.e(TAG, e.getMessage());
+//            } catch (IOException e) {
+//                Log.e(TAG, e.getMessage());
+//            }
+//
+//            return response;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//
+//            mListMovies = JsonParser.convertDataFromJsonString(s);
+//
+//            if(mListMovies != null) {
+//                fetchData(mListMovies);
+//                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+//                mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
+//            } else {
+//                Toast.makeText(MainActivity.this,"Error to fetch data", Toast.LENGTH_LONG).show();
+//                mainBinding.pbLoading.setVisibility(View.INVISIBLE);
+//                mainBinding.btRetry.setVisibility(View.VISIBLE);
+//            }
+//        }
+//    }
 }

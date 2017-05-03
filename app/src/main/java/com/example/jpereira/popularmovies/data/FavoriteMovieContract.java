@@ -15,7 +15,7 @@ public class FavoriteMovieContract {
     public FavoriteMovieContract() {
     }
 
-    public static final String CONTENT_AUTHORITY = Resources.getSystem().getString(R.string.content_authority);
+    public static final String CONTENT_AUTHORITY = "com.example.jpereira.popularmovies";
     public static final String PATH_MOVIE = "movie";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
