@@ -9,4 +9,5 @@
     <string name="retry">Repetir</string>
     <string name="synopsis">Resumo</string>
     <string name="top_rated">Mais Votado</string>
+    <string name="favorite">Favoritos</string>
 </resources>

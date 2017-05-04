@@ -1,6 +1,8 @@
 package com.example.jpereira.popularmovies.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -16,8 +18,9 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
-import com.example.jpereira.popularmovies.adapter.MovieAdapter;
+import com.example.jpereira.popularmovies.adapter.MovieAdapterCursor;
 import com.example.jpereira.popularmovies.classes.Movie;
+import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
 import com.example.jpereira.popularmovies.databinding.ActivityMainBinding;
 import com.example.jpereira.popularmovies.utilities.JsonParser;
 import com.example.jpereira.popularmovies.utilities.NetworkUtil;
@@ -25,23 +28,23 @@ import com.example.jpereira.popularmovies.utilities.NetworkUtil;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String LIST_MOVIES = "list_of_movies";
-    private static final String TYPE_OF_SORT = "type_of_sort";
 
     private static final String GET_POPULAR_MOVIES = "popular";
     private static final String GET_TOP_RATED_MOVIES = "top_rated";
+    private static final String GET_FAVORITE_MOVIES = "favorite";
 
     private static final int POPULAR_MOVIE_LOADER = 42;
 
+    public static final String EXTRA_NAME = "MOVIE";
+
     private static String SORT = GET_POPULAR_MOVIES;
 
-    private MovieAdapter mAdapter;
-    private ArrayList<Movie> mListMovies;
+    private MovieAdapterCursor mAdapterCursor;
+    private Cursor mListMovies;
     private ActivityMainBinding mainBinding;
 
 //    private SQLiteDatabase mDb;
@@ -60,29 +63,32 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mainBinding.gvMoviesDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Movie mMovie = (Movie) parent.getItemAtPosition(position);
+
+                MatrixCursor cursor = (MatrixCursor) parent.getItemAtPosition(position);
+
+                Movie mMovie = null;
+                if (cursor.moveToPosition(position)) {
+                    mMovie = new Movie(
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry._ID)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_TITLE)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_SYNOPSIS)),
+                            Double.parseDouble(cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RATING))),
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RELEASE_DATE))
+                    );
+
+                }
                 openDetail(mMovie);
             }
         });
 
-//        if (savedInstanceState == null) {
         getMoviesData();
-//        } else {
-//            Log.i(TAG, "Loading saved instance");
-//            SORT = savedInstanceState.getString(TYPE_OF_SORT);
-//            mListMovies = savedInstanceState.getParcelableArrayList(LIST_MOVIES);
-//            fetchData(mListMovies);
-//        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         Log.i(TAG, "Saving instance state");
-//        outState.putString(TYPE_OF_SORT, SORT);
-//        outState.putParcelableArrayList(LIST_MOVIES, mListMovies);
-
     }
 
     @Override
@@ -102,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case R.id.menu_top_rated:
                 SORT = GET_TOP_RATED_MOVIES;
                 break;
+            case R.id.menu_favorite:
+                SORT = GET_FAVORITE_MOVIES;
         }
 
         getMoviesData();
@@ -135,14 +143,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getMoviesData();
     }
 
-    private void fetchData(ArrayList<Movie> mListMovies) {
-        mAdapter = new MovieAdapter(MainActivity.this, mListMovies);
-        mainBinding.gvMoviesDisplay.setAdapter(mAdapter);
+    private void fetchDataCursor(Cursor mListMovies) {
+        mAdapterCursor = new MovieAdapterCursor(MainActivity.this, mListMovies);
+        mainBinding.gvMoviesDisplay.setAdapter(mAdapterCursor);
     }
 
     private void openDetail(Movie m) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        intent.putExtra(Movie.EXTRA_NAME, m);
+        intent.putExtra(EXTRA_NAME, m);
 
         startActivity(intent);
     }
@@ -211,10 +219,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void convertStringToArrayMovie(String data) {
-        mListMovies = JsonParser.convertDataFromJsonString(data);
+        mListMovies = JsonParser.convertDataToCursor(data);
 
         if (mListMovies != null) {
-            fetchData(mListMovies);
+            fetchDataCursor(mListMovies);
             mainBinding.pbLoading.setVisibility(View.INVISIBLE);
             mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
         } else {

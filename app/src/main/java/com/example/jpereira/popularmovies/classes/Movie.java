@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class Movie implements Parcelable {
 
-    public static final String EXTRA_NAME = "MOVIE";
+
 
     private String mIdMovie;
     private String mOriginalTitle;
