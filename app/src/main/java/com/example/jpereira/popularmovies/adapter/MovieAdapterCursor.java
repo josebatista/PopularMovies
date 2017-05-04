@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapterCursor extends CursorAdapter {
 
-    private ActivityGridViewItemBinding itemBinding;
+    private ActivityGridViewItemBinding mItemBinding;
 
     public MovieAdapterCursor(Context context, Cursor c) {
         super(context, c, 0);
@@ -34,11 +34,11 @@ public class MovieAdapterCursor extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        itemBinding = DataBindingUtil.bind(view);
+        mItemBinding = DataBindingUtil.bind(view);
 
         Picasso
                 .with(context)
                 .load(cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER)))
-                .into(itemBinding.ivPoster);
+                .into(mItemBinding.ivPoster);
     }
 }

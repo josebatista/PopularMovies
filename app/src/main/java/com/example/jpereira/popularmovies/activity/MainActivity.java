@@ -2,69 +2,69 @@ package com.example.jpereira.popularmovies.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
-import com.example.jpereira.popularmovies.adapter.MovieAdapterCursor;
 import com.example.jpereira.popularmovies.classes.Movie;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
+import com.example.jpereira.popularmovies.loader.PopularMovieLoader;
 import com.example.jpereira.popularmovies.databinding.ActivityMainBinding;
-import com.example.jpereira.popularmovies.utilities.JsonParser;
 import com.example.jpereira.popularmovies.utilities.NetworkUtil;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String GET_POPULAR_MOVIES = "popular";
-    private static final String GET_TOP_RATED_MOVIES = "top_rated";
-    private static final String GET_FAVORITE_MOVIES = "favorite";
+    public static final String GET_POPULAR_MOVIES = "popular";
+    public static final String GET_TOP_RATED_MOVIES = "top_rated";
+    public static final String GET_FAVORITE_MOVIES = "favorite";
+    public static final String EXTRA_NAME = "MOVIE";
+
+    private static final String GV_POSITION = "position";
 
     private static final int POPULAR_MOVIE_LOADER = 42;
 
-    public static final String EXTRA_NAME = "MOVIE";
 
     private static String SORT = GET_POPULAR_MOVIES;
 
-    private MovieAdapterCursor mAdapterCursor;
-    private Cursor mListMovies;
-    private ActivityMainBinding mainBinding;
+    private ActivityMainBinding mMainBinding;
+    private PopularMovieLoader mPopularMovieLoader;
+    private int mGridPosition = 0;
 
 //    private SQLiteDatabase mDb;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        mPopularMovieLoader = new PopularMovieLoader(this, mMainBinding);
 
 //        FavoriteMovieDbHelper dbHelper = new FavoriteMovieDbHelper(this);
 //        mDb = dbHelper.getReadableDatabase();
 
-        mainBinding.gvMoviesDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMainBinding.gvMoviesDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                MatrixCursor cursor = (MatrixCursor) parent.getItemAtPosition(position);
+                mGridPosition = position; //set position to save bundle
+                mPopularMovieLoader.setPosition(mGridPosition); //set position to scroll
+
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
 
                 Movie mMovie = null;
                 if (cursor.moveToPosition(position)) {
@@ -73,11 +73,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_TITLE)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_SYNOPSIS)),
-                            Double.parseDouble(cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RATING))),
+                            cursor.getDouble(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RATING)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RELEASE_DATE))
                     );
 
                 }
+//                cursor.close();
                 openDetail(mMovie);
             }
         });
@@ -87,8 +88,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(GV_POSITION, mMainBinding.gvMoviesDisplay.getFirstVisiblePosition());
         super.onSaveInstanceState(outState);
-        Log.i(TAG, "Saving instance state");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mGridPosition = savedInstanceState.getInt(GV_POSITION);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPopularMovieLoader.setPosition(mGridPosition);
+        mMainBinding.gvMoviesDisplay.setSelection(mGridPosition);
     }
 
     @Override
@@ -122,15 +138,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             URL url = NetworkUtil.buildUrl(SORT);
 
             Bundle bundle = new Bundle();
-            bundle.putString(GET_POPULAR_MOVIES, url.toString());
+            bundle.putString(EXTRA_NAME, url.toString());
+            bundle.putString(GET_POPULAR_MOVIES, SORT);
 
             LoaderManager loaderManager = getSupportLoaderManager();
-            Loader<String> popularMoviesLoader = loaderManager.getLoader(POPULAR_MOVIE_LOADER);
+            Loader<Cursor> loader = loaderManager.getLoader(POPULAR_MOVIE_LOADER);
 
-            if (popularMoviesLoader == null) {
-                loaderManager.initLoader(POPULAR_MOVIE_LOADER, bundle, this);
+            if (loader == null) {
+                loaderManager.initLoader(POPULAR_MOVIE_LOADER, bundle, mPopularMovieLoader);
             } else {
-                loaderManager.restartLoader(POPULAR_MOVIE_LOADER, bundle, this);
+                loaderManager.restartLoader(POPULAR_MOVIE_LOADER, bundle, mPopularMovieLoader);
             }
 
         } catch (MalformedURLException e) {
@@ -139,13 +156,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void onGetData(View view) {
-        mainBinding.btRetry.setVisibility(View.INVISIBLE);
+        mMainBinding.btRetry.setVisibility(View.INVISIBLE);
         getMoviesData();
-    }
-
-    private void fetchDataCursor(Cursor mListMovies) {
-        mAdapterCursor = new MovieAdapterCursor(MainActivity.this, mListMovies);
-        mainBinding.gvMoviesDisplay.setAdapter(mAdapterCursor);
     }
 
     private void openDetail(Movie m) {
@@ -153,83 +165,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         intent.putExtra(EXTRA_NAME, m);
 
         startActivity(intent);
-    }
-
-    @Override
-    public Loader<String> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<String>(this) {
-
-            String jsonMovies;
-
-            @Override
-            protected void onStartLoading() {
-                super.onStartLoading();
-
-                if (args == null) {
-                    return;
-                }
-
-                mainBinding.gvMoviesDisplay.setVisibility(View.INVISIBLE);
-                mainBinding.pbLoading.setVisibility(View.VISIBLE);
-
-                if (jsonMovies != null) {
-                    deliverResult(jsonMovies);
-                } else {
-                    forceLoad();
-                }
-            }
-
-            @Override
-            public String loadInBackground() {
-                String sort = args.getString(GET_POPULAR_MOVIES);
-                String response = null;
-
-
-                if (NetworkUtil.isOnline(getContext())) {
-                    if (sort == null || TextUtils.isEmpty(sort)) {
-                        return null;
-                    }
-
-                    try {
-                        URL url = new URL(sort);
-                        response = NetworkUtil.getResponseFromHttpUrl(url);
-                    } catch (IOException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-                }
-                return response;
-            }
-
-            @Override
-            public void deliverResult(String data) {
-                jsonMovies = data;
-                convertStringToArrayMovie(jsonMovies);
-                super.deliverResult(data);
-            }
-        };
-    }
-
-    @Override
-    public void onLoadFinished(Loader<String> loader, String data) {
-        convertStringToArrayMovie(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<String> loader) {
-    }
-
-    private void convertStringToArrayMovie(String data) {
-        mListMovies = JsonParser.convertDataToCursor(data);
-
-        if (mListMovies != null) {
-            fetchDataCursor(mListMovies);
-            mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-            mainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
-        } else {
-            Toast.makeText(MainActivity.this, "Error to fetch data", Toast.LENGTH_LONG).show();
-            mainBinding.pbLoading.setVisibility(View.INVISIBLE);
-            mainBinding.btRetry.setVisibility(View.VISIBLE);
-        }
     }
 
 }

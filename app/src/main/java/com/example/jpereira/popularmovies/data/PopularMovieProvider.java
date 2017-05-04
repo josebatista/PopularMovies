@@ -1,9 +1,11 @@
 package com.example.jpereira.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -91,22 +93,28 @@ public class PopularMovieProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
 
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Uri returnUri;
+
         switch (sUriMatcher.match(uri)) {
 
             case CODE_MOVIE:
-                try {
-                    db.beginTransaction();
-
-
+                db.beginTransaction();
+                long id = db.insert(FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, id);
                     db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
+                } else {
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
+                db.endTransaction();
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        return null;
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return returnUri;
     }
 
     @Override

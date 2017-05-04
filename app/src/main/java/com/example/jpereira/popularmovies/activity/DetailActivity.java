@@ -1,13 +1,19 @@
 package com.example.jpereira.popularmovies.activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
 import com.example.jpereira.popularmovies.classes.Movie;
+import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
 import com.example.jpereira.popularmovies.databinding.ActivityDetailBinding;
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +45,31 @@ public class DetailActivity extends AppCompatActivity {
                 activityDetailBinding.tvOverviewValue.setText(mMovie.getmSynopsis());
 
                 Log.i(TAG, mMovie.toString());
+            }
+        }
+    }
+
+    public void favoriteMovie(View v) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_ID, mMovie.getmIdMovie());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_TITLE, mMovie.getmOriginalTitle());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER, mMovie.getmImageUrl());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_SYNOPSIS, mMovie.getmSynopsis());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RATING, mMovie.getmRating());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_RELEASE_DATE, mMovie.getmReleaseDate());
+
+        Uri uri = FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(mMovie.getmIdMovie()).build();
+
+        Cursor c = getContentResolver().query(uri, null, null, null, FavoriteMovieContract.FavoriteMovieEntry._ID);
+
+        if(c != null) {
+
+            uri = getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, cv);
+
+            if (uri != null) {
+                Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
             }
         }
 
