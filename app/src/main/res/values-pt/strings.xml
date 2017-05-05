@@ -10,4 +10,6 @@
     <string name="synopsis">Resumo</string>
     <string name="top_rated">Mais Votado</string>
     <string name="favorite">Favoritos</string>
+    <string name="movie_already_exists">Filme já adicionado aos favoritos</string>
+    <string name="added_success">Adicionado com Sucesso</string>
 </resources>

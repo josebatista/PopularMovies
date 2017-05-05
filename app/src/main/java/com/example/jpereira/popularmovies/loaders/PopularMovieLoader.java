@@ -1,4 +1,4 @@
-package com.example.jpereira.popularmovies.loader;
+package com.example.jpereira.popularmovies.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -62,6 +62,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
                 mMainBinding.pbLoading.setVisibility(View.VISIBLE);
 
                 String sort = args.getString(MainActivity.GET_POPULAR_MOVIES);
+
                 if (sort == MainActivity.GET_FAVORITE_MOVIES) {
                     forceLoad();
                 } else {
@@ -91,16 +92,14 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
                                 URL url = new URL(urlArg);
                                 String json = NetworkUtil.getResponseFromHttpUrl(url);
                                 response = JsonParser.convertDataToCursor(json);
+                                mPosition = 0;
                             } catch (IOException e) {
                                 Log.e(TAG, e.getMessage());
                             }
                         }
                         break;
                     case MainActivity.GET_FAVORITE_MOVIES:
-                        Log.d(TAG, "Load from DataBase!");
-
                         response = getContext().getContentResolver().query(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, null, null, null, FavoriteMovieContract.FavoriteMovieEntry._ID);
-
                         break;
                 }
                 return response;

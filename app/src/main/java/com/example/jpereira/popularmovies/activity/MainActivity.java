@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import com.example.jpereira.popularmovies.R;
 import com.example.jpereira.popularmovies.classes.Movie;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
-import com.example.jpereira.popularmovies.loader.PopularMovieLoader;
+import com.example.jpereira.popularmovies.loaders.PopularMovieLoader;
 import com.example.jpereira.popularmovies.databinding.ActivityMainBinding;
 import com.example.jpereira.popularmovies.utilities.NetworkUtil;
 
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 if (cursor.moveToPosition(position)) {
                     mMovie = new Movie(
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry._ID)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_ID)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_TITLE)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER)),
                             cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_SYNOPSIS)),

@@ -10,7 +10,7 @@ import android.os.Parcelable;
 public class Movie implements Parcelable {
 
 
-
+    private String mIdDb;
     private String mIdMovie;
     private String mOriginalTitle;
     private String mImageUrl;
@@ -18,7 +18,8 @@ public class Movie implements Parcelable {
     private double mRating;
     private String mReleaseDate;
 
-    public Movie(String mIdMovie, String mOriginalTitle, String mImageUrl, String mSynopsis, double mRating, String mReleaseDate) {
+    public Movie(String mIdDb, String mIdMovie, String mOriginalTitle, String mImageUrl, String mSynopsis, double mRating, String mReleaseDate) {
+        this.mIdDb = mIdDb;
         this.mIdMovie = mIdMovie;
         this.mOriginalTitle = mOriginalTitle;
         this.mImageUrl = mImageUrl;
@@ -28,12 +29,21 @@ public class Movie implements Parcelable {
     }
 
     public Movie(Parcel in) {
+        mIdDb = in.readString();
         mIdMovie = in.readString();
         mOriginalTitle = in.readString();
         mImageUrl = in.readString();
         mSynopsis = in.readString();
         mRating = in.readDouble();
         mReleaseDate = in.readString();
+    }
+
+    public String getmIdDb() {
+        return mIdDb;
+    }
+
+    public void setmIdDb(String mIdDb) {
+        this.mIdDb = mIdDb;
     }
 
     public String getmIdMovie() {
@@ -103,6 +113,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mIdDb);
         dest.writeString(mIdMovie);
         dest.writeString(mOriginalTitle);
         dest.writeString(mImageUrl);
@@ -114,6 +125,7 @@ public class Movie implements Parcelable {
     @Override
     public String toString() {
         return "Movie{" +
+                "mIdDb='" + mIdDb + '\'' +
                 "mIdMovie='" + mIdMovie + '\'' +
                 ", mOriginalTitle='" + mOriginalTitle + '\'' +
                 ", mImageUrl='" + mImageUrl + '\'' +

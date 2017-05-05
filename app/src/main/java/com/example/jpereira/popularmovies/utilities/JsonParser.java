@@ -36,6 +36,7 @@ public class JsonParser {
 
             String[] columns = {
                     FavoriteMovieContract.FavoriteMovieEntry._ID,
+                    FavoriteMovieContract.FavoriteMovieEntry.MOVIE_ID,
                     FavoriteMovieContract.FavoriteMovieEntry.MOVIE_TITLE,
                     FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER,
                     FavoriteMovieContract.FavoriteMovieEntry.MOVIE_SYNOPSIS,
@@ -52,6 +53,7 @@ public class JsonParser {
                 for (int i = 0; i < mArrayMovies.length(); i++) {
                     JSONObject mMovie = mArrayMovies.getJSONObject(i);
 
+                    String mIdDb = String.valueOf(i);
                     String mMovieId = String.valueOf(mMovie.getInt(MOVIE_ID));
                     String mOriginalTitle = mMovie.getString(ORIGINAL_TITLE);
                     String mPoster = BASE_URL_POSTER + mMovie.getString(MOVIE_POSTER_IMAGE);
@@ -59,7 +61,7 @@ public class JsonParser {
                     double mUserRating = mMovie.getDouble(USER_RATING);
                     String mReleaseDate = mMovie.getString(RELEASE_DATE);
 
-                    mMatrixCursor.addRow(new Object[]{mMovieId, mOriginalTitle, mPoster, mSynopsis, mUserRating, mReleaseDate});
+                    mMatrixCursor.addRow(new Object[]{mIdDb, mMovieId, mOriginalTitle, mPoster, mSynopsis, mUserRating, mReleaseDate});
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

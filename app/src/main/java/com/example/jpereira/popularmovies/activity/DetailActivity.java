@@ -64,13 +64,15 @@ public class DetailActivity extends AppCompatActivity {
 
         Cursor c = getContentResolver().query(uri, null, null, null, FavoriteMovieContract.FavoriteMovieEntry._ID);
 
-        if(c != null) {
+        if (c.getCount() == 0) {
 
             uri = getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, cv);
 
             if (uri != null) {
-                Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), getString(R.string.added_success), Toast.LENGTH_LONG).show();
             }
+        } else {
+            Toast.makeText(getBaseContext(), getString(R.string.movie_already_exists), Toast.LENGTH_LONG).show();
         }
 
     }

@@ -13,4 +13,7 @@
     <string name="popular">Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="favorite">Favorites</string>
+    <string name="movie_already_exists">Movie already added to favorites</string>
+    <string name="added_success">Added successfully</string>
+
 </resources>
