@@ -117,8 +117,11 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapterCursor.swapCursor(data);
-        mMainBinding.gvMoviesDisplay.setSelection(this.mPosition);
+        setDataToAdapter(data);
+        if (data != null) {
+            mAdapterCursor.swapCursor(data);
+            mMainBinding.gvMoviesDisplay.setSelection(this.mPosition);
+        }
     }
 
     @Override
@@ -130,6 +133,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
         if (data != null) {
             fetchDataCursor(data);
             mMainBinding.pbLoading.setVisibility(View.INVISIBLE);
+            mMainBinding.btRetry.setVisibility(View.INVISIBLE);
             mMainBinding.gvMoviesDisplay.setVisibility(View.VISIBLE);
         } else {
             Toast.makeText(this.mContext, "Error to fetch data", Toast.LENGTH_LONG).show();

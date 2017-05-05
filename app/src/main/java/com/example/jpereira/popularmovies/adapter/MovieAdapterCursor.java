@@ -39,6 +39,8 @@ public class MovieAdapterCursor extends CursorAdapter {
         Picasso
                 .with(context)
                 .load(cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.MOVIE_POSTER)))
+                .error(android.R.drawable.ic_menu_report_image)
+                .placeholder(android.R.drawable.ic_menu_gallery)
                 .into(mItemBinding.ivPoster);
     }
 }

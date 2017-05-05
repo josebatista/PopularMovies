@@ -2,7 +2,6 @@ package com.example.jpereira.popularmovies.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,18 +61,14 @@ public class DetailActivity extends AppCompatActivity {
         Uri uri = FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI;
         uri = uri.buildUpon().appendPath(mMovie.getmIdMovie()).build();
 
-        Cursor c = getContentResolver().query(uri, null, null, null, FavoriteMovieContract.FavoriteMovieEntry._ID);
+        int i = getContentResolver().delete(uri, null, null);
 
-        if (c.getCount() == 0) {
-
+        if (i == 0) {
             uri = getContentResolver().insert(FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI, cv);
 
             if (uri != null) {
                 Toast.makeText(getBaseContext(), getString(R.string.added_success), Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getBaseContext(), getString(R.string.movie_already_exists), Toast.LENGTH_LONG).show();
         }
-
     }
 }

@@ -132,6 +132,14 @@ public class PopularMovieProvider extends ContentProvider {
                         selectionArgs
                 );
                 break;
+            case CODE_MOVIE_WITH_DATE:
+                String id = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{id};
+                numRowsDeleted = dbHelper.getWritableDatabase().delete(
+                        FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
+                        FavoriteMovieContract.FavoriteMovieEntry.MOVIE_ID + " = ? ",
+                        selectionArguments);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
