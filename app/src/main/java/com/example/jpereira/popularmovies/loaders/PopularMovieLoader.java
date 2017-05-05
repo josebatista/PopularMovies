@@ -63,7 +63,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
 
                 String sort = args.getString(MainActivity.GET_POPULAR_MOVIES);
 
-                if (sort == MainActivity.GET_FAVORITE_MOVIES) {
+                if (sort.equals(MainActivity.GET_FAVORITE_MOVIES)) {
                     forceLoad();
                 } else {
                     if (cursorMovies != null) {

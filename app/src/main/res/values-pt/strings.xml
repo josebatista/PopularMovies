@@ -12,4 +12,8 @@
     <string name="favorite">Favoritos</string>
     <string name="movie_already_exists">Filme já adicionado aos favoritos</string>
     <string name="added_success">Adicionado com Sucesso</string>
+    <string name="removed_success">Removido com Sucesso</string>
+    <string name="fav_content_description">Adicionado como Favorito</string>
+    <string name="remove_fav">Remover dos Favoritos</string>
+    <string name="add_fav">Adicionar aos Favoritos</string>
 </resources>

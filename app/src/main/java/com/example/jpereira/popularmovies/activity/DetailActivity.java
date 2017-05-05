@@ -2,6 +2,7 @@ package com.example.jpereira.popularmovies.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +44,18 @@ public class DetailActivity extends AppCompatActivity {
                 activityDetailBinding.tvRatingValue.setText("(" + rating + "/10)");
                 activityDetailBinding.tvOverviewValue.setText(mMovie.getmSynopsis());
 
+                Uri uri = FavoriteMovieContract.FavoriteMovieEntry.CONTENT_URI;
+                uri = uri.buildUpon().appendPath(mMovie.getmIdMovie()).build();
+
+                Cursor c = getContentResolver().query(uri, null, null, null, FavoriteMovieContract.FavoriteMovieEntry._ID);
+
+                if (c.getCount() > 0) {
+                    //remove from fav
+                    activityDetailBinding.btnFav.setText(R.string.remove_fav);
+                } else {
+                    //add to fav
+                    activityDetailBinding.btnFav.setText(R.string.add_fav);
+                }
                 Log.i(TAG, mMovie.toString());
             }
         }
@@ -68,7 +81,11 @@ public class DetailActivity extends AppCompatActivity {
 
             if (uri != null) {
                 Toast.makeText(getBaseContext(), getString(R.string.added_success), Toast.LENGTH_LONG).show();
+                activityDetailBinding.btnFav.setText(R.string.remove_fav);
             }
+        } else {
+            Toast.makeText(getBaseContext(), getString(R.string.removed_success), Toast.LENGTH_LONG).show();
+            activityDetailBinding.btnFav.setText(R.string.add_fav);
         }
     }
 }

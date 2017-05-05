@@ -2,9 +2,9 @@
 
     <string name="content_authority" translatable="false">com.example.jpereira.popularmovies</string>
 
-
     <string name="app_name">Popular Movies</string>
     <string name="content_description">Image Of Movie</string>
+    <string name="fav_content_description">Favorite Movie</string>
     <string name="synopsis">Overview</string>
     <string name="detail_title">Movie Detail</string>
     <string name="overview_movie">Overview</string>
@@ -15,5 +15,10 @@
     <string name="favorite">Favorites</string>
     <string name="movie_already_exists">Movie already added to favorites</string>
     <string name="added_success">Added successfully</string>
+    <string name="removed_success">Successfully removed</string>
+
+    <string name="add_fav">Add to favorites</string>
+    <string name="remove_fav">Remove from favorites</string>
+
 
 </resources>
