@@ -1,4 +1,4 @@
-package com.example.jpereira.popularmovies.adapter;
+package com.example.jpereira.popularmovies.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,25 +10,25 @@ import android.widget.CursorAdapter;
 
 import com.example.jpereira.popularmovies.R;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
-import com.example.jpereira.popularmovies.databinding.ActivityGridViewItemBinding;
+import com.example.jpereira.popularmovies.databinding.GridViewItemBinding;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by jpereira on 02/03/17.
  */
 
-public class MovieAdapterCursor extends CursorAdapter {
+public class MovieAdapter extends CursorAdapter {
 
-    private ActivityGridViewItemBinding mItemBinding;
+    private GridViewItemBinding mItemBinding;
 
-    public MovieAdapterCursor(Context context, Cursor c) {
+    public MovieAdapter(Context context, Cursor c) {
         super(context, c, 0);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-        return LayoutInflater.from(context).inflate(R.layout.activity_grid_view_item, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.grid_view_item, parent, false);
     }
 
     @Override

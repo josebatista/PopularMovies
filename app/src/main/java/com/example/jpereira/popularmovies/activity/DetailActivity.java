@@ -6,23 +6,34 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
+import com.example.jpereira.popularmovies.adapters.TrailerAdapter;
 import com.example.jpereira.popularmovies.classes.Movie;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
 import com.example.jpereira.popularmovies.databinding.ActivityDetailBinding;
+import com.example.jpereira.popularmovies.loaders.TrailerLoader;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
 
+    private static final int TRAILER_LOADER = 43;
+    private static final int REVIEW_LOADER = 44;
+
+    public static final String ID = "id";
+
     private ActivityDetailBinding activityDetailBinding;
     private Movie mMovie;
+    private TrailerLoader mTrailerLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +47,12 @@ public class DetailActivity extends AppCompatActivity {
 
                 activityDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-                Picasso.with(this).load(mMovie.getmImageUrl()).into(activityDetailBinding.ivPosterDetail);
+                Picasso.with(this)
+                        .load(mMovie.getmImageUrl())
+                        .error(android.R.drawable.ic_menu_report_image)
+                        .placeholder(android.R.drawable.ic_menu_gallery)
+                        .into(activityDetailBinding.ivPosterDetail);
+
                 activityDetailBinding.tvMovieTitle.setText(mMovie.getmOriginalTitle());
                 activityDetailBinding.tvReleaseDateValue.setText(mMovie.getmReleaseDate());
                 float rating = (float) mMovie.getmRating();
@@ -57,6 +73,27 @@ public class DetailActivity extends AppCompatActivity {
                     activityDetailBinding.btnFav.setText(R.string.add_fav);
                 }
                 Log.i(TAG, mMovie.toString());
+
+                TrailerAdapter mTrailerAdapter = new TrailerAdapter(this, this);
+
+                LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                activityDetailBinding.rvTrailer.setLayoutManager(layoutManager);
+                activityDetailBinding.rvTrailer.setHasFixedSize(true);
+                activityDetailBinding.rvTrailer.setAdapter(mTrailerAdapter);
+
+                mTrailerLoader = new TrailerLoader(this, activityDetailBinding, mTrailerAdapter);
+
+                Bundle bundle = new Bundle();
+                bundle.putString(ID, mMovie.getmIdMovie());
+
+                LoaderManager loaderManager = getSupportLoaderManager();
+                Loader<Cursor> loaderTrailer = loaderManager.getLoader(TRAILER_LOADER);
+
+                if (loaderTrailer == null) {
+                    loaderManager.initLoader(TRAILER_LOADER, bundle, mTrailerLoader);
+                } else {
+                    loaderManager.restartLoader(TRAILER_LOADER, bundle, mTrailerLoader);
+                }
             }
         }
     }
@@ -87,5 +124,12 @@ public class DetailActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), getString(R.string.removed_success), Toast.LENGTH_LONG).show();
             activityDetailBinding.btnFav.setText(R.string.add_fav);
         }
+    }
+
+    @Override
+    public void onClickTrailer(String url) {
+        Uri uri = Uri.parse(url).buildUpon().build();
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 }

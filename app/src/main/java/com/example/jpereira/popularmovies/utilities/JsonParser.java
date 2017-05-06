@@ -17,6 +17,7 @@ public class JsonParser {
     private static final String TAG = JsonParser.class.getSimpleName();
 
     private static final String BASE_URL_POSTER = "http://image.tmdb.org/t/p/w185/";
+    private static final String BASE_URL_TRAILER = "https://youtu.be/";
 
 
     private static final String RESULTS = "results";
@@ -28,8 +29,11 @@ public class JsonParser {
     private static final String USER_RATING = "vote_average";
     private static final String RELEASE_DATE = "release_date";
 
+    private static final String TRAILER_NAME = "name";
+    private static final String TRAILER_KEY = "key";
+    private static final String TRAILER_TYPE = "type";
 
-    public static MatrixCursor convertDataToCursor(String json) {
+    public static MatrixCursor convertMovieToCursor(String json) {
         MatrixCursor mMatrixCursor = null;
 
         if (json != null) {
@@ -62,6 +66,40 @@ public class JsonParser {
                     String mReleaseDate = mMovie.getString(RELEASE_DATE);
 
                     mMatrixCursor.addRow(new Object[]{mIdDb, mMovieId, mOriginalTitle, mPoster, mSynopsis, mUserRating, mReleaseDate});
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return mMatrixCursor;
+    }
+
+    public static MatrixCursor convertTrailerToCursor(String json) {
+        MatrixCursor mMatrixCursor = null;
+
+        if (json != null) {
+
+            String[] columns = {
+                    "_id",
+                    TRAILER_NAME,
+                    TRAILER_KEY
+            };
+
+            mMatrixCursor = new MatrixCursor(columns);
+
+            try {
+                JSONObject jsonObjectMovies = new JSONObject(json);
+                JSONArray mArrayMovies = jsonObjectMovies.getJSONArray(RESULTS);
+
+                for (int i = 0; i < mArrayMovies.length(); i++) {
+                    JSONObject mMovie = mArrayMovies.getJSONObject(i);
+                    if (mMovie.getString(TRAILER_TYPE).equals("Trailer")) {
+                        String mId = String.valueOf(i);
+                        String mName = String.valueOf(mMovie.getString(TRAILER_NAME));
+                        String mUrl = BASE_URL_TRAILER + mMovie.getString(TRAILER_KEY);
+
+                        mMatrixCursor.addRow(new Object[]{mId, mName, mUrl});
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

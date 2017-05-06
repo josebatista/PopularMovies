@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.activity.MainActivity;
-import com.example.jpereira.popularmovies.adapter.MovieAdapterCursor;
+import com.example.jpereira.popularmovies.adapters.MovieAdapter;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
 import com.example.jpereira.popularmovies.databinding.ActivityMainBinding;
 import com.example.jpereira.popularmovies.utilities.JsonParser;
@@ -29,7 +29,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
 
     private static final String TAG = PopularMovieLoader.class.getSimpleName();
 
-    private MovieAdapterCursor mAdapterCursor;
+    private MovieAdapter mAdapterCursor;
 
     private ActivityMainBinding mMainBinding;
     private Context mContext;
@@ -91,7 +91,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
                             try {
                                 URL url = new URL(urlArg);
                                 String json = NetworkUtil.getResponseFromHttpUrl(url);
-                                response = JsonParser.convertDataToCursor(json);
+                                response = JsonParser.convertMovieToCursor(json);
                                 mPosition = 0;
                             } catch (IOException e) {
                                 Log.e(TAG, e.getMessage());
@@ -126,7 +126,6 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapterCursor.swapCursor(null);
     }
 
     private void setDataToAdapter(Cursor data) {
@@ -143,7 +142,7 @@ public class PopularMovieLoader implements LoaderManager.LoaderCallbacks<Cursor>
     }
 
     private void fetchDataCursor(Cursor mListMovies) {
-        mAdapterCursor = new MovieAdapterCursor(this.mContext, mListMovies);
+        mAdapterCursor = new MovieAdapter(this.mContext, mListMovies);
         mMainBinding.gvMoviesDisplay.setAdapter(mAdapterCursor);
     }
 }

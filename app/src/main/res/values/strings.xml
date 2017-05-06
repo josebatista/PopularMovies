@@ -17,8 +17,9 @@
     <string name="added_success">Added successfully</string>
     <string name="removed_success">Successfully removed</string>
 
-    <string name="add_fav">Add to favorites</string>
-    <string name="remove_fav">Remove from favorites</string>
+    <string name="add_fav">Add\nto\nfavorites</string>
+    <string name="remove_fav">Remove\nfrom\nfavorites</string>
+    <string name="trailers" translatable="false">Trailers</string>
 
 
 </resources>
