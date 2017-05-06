@@ -16,4 +16,5 @@
     <string name="fav_content_description">Adicionado como Favorito</string>
     <string name="remove_fav">Remover\ndos\nFavoritos</string>
     <string name="add_fav">Adicionar\naos\nFavoritos</string>
+    <string name="reviews">Comentários</string>
 </resources>

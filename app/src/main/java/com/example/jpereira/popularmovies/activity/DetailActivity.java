@@ -15,10 +15,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jpereira.popularmovies.R;
+import com.example.jpereira.popularmovies.adapters.ReviewAdapter;
 import com.example.jpereira.popularmovies.adapters.TrailerAdapter;
 import com.example.jpereira.popularmovies.classes.Movie;
 import com.example.jpereira.popularmovies.data.FavoriteMovieContract;
 import com.example.jpereira.popularmovies.databinding.ActivityDetailBinding;
+import com.example.jpereira.popularmovies.loaders.ReviewLoader;
 import com.example.jpereira.popularmovies.loaders.TrailerLoader;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +36,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private ActivityDetailBinding activityDetailBinding;
     private Movie mMovie;
     private TrailerLoader mTrailerLoader;
+    private ReviewLoader mReviewLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
                 TrailerAdapter mTrailerAdapter = new TrailerAdapter(this, this);
 
-                LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-                activityDetailBinding.rvTrailer.setLayoutManager(layoutManager);
+                LinearLayoutManager layoutManagerTrailer = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                activityDetailBinding.rvTrailer.setLayoutManager(layoutManagerTrailer);
                 activityDetailBinding.rvTrailer.setHasFixedSize(true);
                 activityDetailBinding.rvTrailer.setAdapter(mTrailerAdapter);
 
@@ -93,6 +96,23 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                     loaderManager.initLoader(TRAILER_LOADER, bundle, mTrailerLoader);
                 } else {
                     loaderManager.restartLoader(TRAILER_LOADER, bundle, mTrailerLoader);
+                }
+
+                ReviewAdapter mReviewAdapter = new ReviewAdapter(this);
+
+                LinearLayoutManager layoutManagerReview = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                activityDetailBinding.rvReviews.setLayoutManager(layoutManagerReview);
+                activityDetailBinding.rvReviews.setHasFixedSize(true);
+                activityDetailBinding.rvReviews.setAdapter(mReviewAdapter);
+
+                mReviewLoader = new ReviewLoader(this, activityDetailBinding, mReviewAdapter);
+
+                Loader<Cursor> loaderReview = loaderManager.getLoader(REVIEW_LOADER);
+
+                if (loaderReview == null) {
+                    loaderManager.initLoader(REVIEW_LOADER, bundle, mReviewLoader);
+                } else {
+                    loaderManager.restartLoader(REVIEW_LOADER, bundle, mReviewLoader);
                 }
             }
         }

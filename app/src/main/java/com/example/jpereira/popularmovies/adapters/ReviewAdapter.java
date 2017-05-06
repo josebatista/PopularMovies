@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jpereira.popularmovies.R;
+import com.example.jpereira.popularmovies.databinding.ReviewItemBinding;
 import com.example.jpereira.popularmovies.databinding.TrailerItemBinding;
 import com.example.jpereira.popularmovies.utilities.JsonParser;
 
@@ -17,21 +18,13 @@ import com.example.jpereira.popularmovies.utilities.JsonParser;
  * Created by jpereira on 02/03/17.
  */
 
-public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerAdapterViewHolder> {
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.TrailerAdapterViewHolder> {
 
     private final Context mContext;
-
-    final private TrailerAdapterOnClickHandler mClickHandler;
-
-    public interface TrailerAdapterOnClickHandler {
-        void onClickTrailer(String url);
-    }
-
     private Cursor mCursor;
 
-    public TrailerAdapter(@NonNull Context context, TrailerAdapterOnClickHandler clickHandler) {
+    public ReviewAdapter(@NonNull Context context) {
         mContext = context;
-        mClickHandler = clickHandler;
     }
 
     @Override
@@ -39,7 +32,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
 
         View view = LayoutInflater
                 .from(mContext)
-                .inflate(R.layout.trailer_item, viewGroup, false);
+                .inflate(R.layout.review_item, viewGroup, false);
 
         view.setFocusable(true);
 
@@ -50,7 +43,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
     public void onBindViewHolder(TrailerAdapterViewHolder trailerAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
 
-        trailerAdapterViewHolder.mTrailerBinding.tvVideoName.setText(mCursor.getString(mCursor.getColumnIndex(JsonParser.TRAILER_NAME)));
+        trailerAdapterViewHolder.mReviewBinding.tvReviewAuthor.setText(mCursor.getString(mCursor.getColumnIndex(JsonParser.REVIEW_AUTHOR)));
+        trailerAdapterViewHolder.mReviewBinding.tvReviewContent.setText(mCursor.getString(mCursor.getColumnIndex(JsonParser.REVIEW_CONTENT)));
 
     }
 
@@ -67,24 +61,14 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
         notifyDataSetChanged();
     }
 
-    class TrailerAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class TrailerAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        final TrailerItemBinding mTrailerBinding;
+        final ReviewItemBinding mReviewBinding;
 
         TrailerAdapterViewHolder(View view) {
             super(view);
 
-            mTrailerBinding = DataBindingUtil.bind(view);
-
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            String url = mCursor.getString(mCursor.getColumnIndex("key"));
-            mClickHandler.onClickTrailer(url);
+            mReviewBinding = DataBindingUtil.bind(view);
         }
     }
 }

@@ -20,6 +20,7 @@
     <string name="add_fav">Add\nto\nfavorites</string>
     <string name="remove_fav">Remove\nfrom\nfavorites</string>
     <string name="trailers" translatable="false">Trailers</string>
+    <string name="reviews">Reviews</string>
 
 
 </resources>
