@@ -49,8 +49,8 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<Cursor> {
                     return;
                 }
 
-                mDetailBinding.rvTrailer.setVisibility(View.INVISIBLE);
-                mDetailBinding.pbLoadingTrailer.setVisibility(View.VISIBLE);
+                mDetailBinding.includeTrailerList.rvTrailer.setVisibility(View.INVISIBLE);
+                mDetailBinding.pbLoadingDetails.setVisibility(View.VISIBLE);
 
                 if (cursorTrailers != null) {
                     deliverResult(cursorTrailers);
@@ -91,7 +91,7 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data != null) {
+        if (data != null) {
             mTrailerAdapter.swapCursor(data);
         }
     }
@@ -104,11 +104,11 @@ public class TrailerLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         if (data != null) {
             mTrailerAdapter.swapCursor(data);
 
-            mDetailBinding.pbLoadingTrailer.setVisibility(View.INVISIBLE);
-            mDetailBinding.rvTrailer.setVisibility(View.VISIBLE);
+            mDetailBinding.pbLoadingDetails.setVisibility(View.INVISIBLE);
+            mDetailBinding.includeTrailerList.rvTrailer.setVisibility(View.VISIBLE);
         } else {
             Toast.makeText(this.mContext, "Error to fetch trailer data", Toast.LENGTH_LONG).show();
-            mDetailBinding.pbLoadingTrailer.setVisibility(View.INVISIBLE);
+            mDetailBinding.pbLoadingDetails.setVisibility(View.INVISIBLE);
         }
     }
 }

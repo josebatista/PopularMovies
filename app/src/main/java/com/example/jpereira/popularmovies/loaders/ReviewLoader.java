@@ -49,8 +49,8 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor> {
                     return;
                 }
 
-                mDetailBinding.rvReviews.setVisibility(View.INVISIBLE);
-                mDetailBinding.pbLoadingTrailer.setVisibility(View.VISIBLE);
+                mDetailBinding.includeReviewList.rvReviews.setVisibility(View.INVISIBLE);
+                mDetailBinding.pbLoadingDetails.setVisibility(View.VISIBLE);
 
                 if (cursorReview != null) {
                     deliverResult(cursorReview);
@@ -91,7 +91,7 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data != null) {
+        if (data != null) {
             mReviewAdapter.swapCursor(data);
         }
     }
@@ -104,11 +104,11 @@ public class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         if (data != null) {
             mReviewAdapter.swapCursor(data);
 
-            mDetailBinding.pbLoadingTrailer.setVisibility(View.INVISIBLE);
-            mDetailBinding.rvReviews.setVisibility(View.VISIBLE);
+            mDetailBinding.pbLoadingDetails.setVisibility(View.INVISIBLE);
+            mDetailBinding.includeReviewList.rvReviews.setVisibility(View.VISIBLE);
         } else {
             Toast.makeText(this.mContext, "Error to fetch reviews data", Toast.LENGTH_LONG).show();
-            mDetailBinding.pbLoadingTrailer.setVisibility(View.INVISIBLE);
+            mDetailBinding.pbLoadingDetails.setVisibility(View.INVISIBLE);
         }
     }
 }

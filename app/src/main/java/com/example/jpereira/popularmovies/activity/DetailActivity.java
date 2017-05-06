@@ -80,9 +80,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 TrailerAdapter mTrailerAdapter = new TrailerAdapter(this, this);
 
                 LinearLayoutManager layoutManagerTrailer = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-                activityDetailBinding.rvTrailer.setLayoutManager(layoutManagerTrailer);
-                activityDetailBinding.rvTrailer.setHasFixedSize(true);
-                activityDetailBinding.rvTrailer.setAdapter(mTrailerAdapter);
+                activityDetailBinding.includeTrailerList.rvTrailer.setLayoutManager(layoutManagerTrailer);
+                activityDetailBinding.includeTrailerList.rvTrailer.setHasFixedSize(true);
+                activityDetailBinding.includeTrailerList.rvTrailer.setAdapter(mTrailerAdapter);
 
                 mTrailerLoader = new TrailerLoader(this, activityDetailBinding, mTrailerAdapter);
 
@@ -101,9 +101,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 ReviewAdapter mReviewAdapter = new ReviewAdapter(this);
 
                 LinearLayoutManager layoutManagerReview = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-                activityDetailBinding.rvReviews.setLayoutManager(layoutManagerReview);
-                activityDetailBinding.rvReviews.setHasFixedSize(true);
-                activityDetailBinding.rvReviews.setAdapter(mReviewAdapter);
+                activityDetailBinding.includeReviewList.rvReviews.setLayoutManager(layoutManagerReview);
+                activityDetailBinding.includeReviewList.rvReviews.setHasFixedSize(true);
+                activityDetailBinding.includeReviewList.rvReviews.setAdapter(mReviewAdapter);
 
                 mReviewLoader = new ReviewLoader(this, activityDetailBinding, mReviewAdapter);
 

@@ -10,9 +10,7 @@
             android:id="@+id/gv_movies_display"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:numColumns="auto_fit"
-            android:horizontalSpacing="6dp"
-            android:verticalSpacing="6dp"/>
+            android:numColumns="auto_fit" />
 
         <ProgressBar
             android:id="@+id/pb_loading"
